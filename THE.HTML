@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monsieur Thé - Produits Laitiers & Bubble Tea</title>
+    <meta name="description" content="Découvrez l'univers de Monsieur Thé, spécialiste des produits laitiers traditionnels et du bubble tea moderne.">
+    
+    <!-- Pré-chargement des polices pour améliorer les performances -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts - Poppins pour les titres, Roboto pour le texte -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS pour la carte -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css">
+    
+    <!-- EmailJS pour l'envoi d'emails -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+ 
+    <style>
+        /* Variables de couleurs pour maintenir une cohérence visuelle */
+        :root {
+            --primary-cream: #FFF8E1;
+            --primary-white: #FFFDF9;
+            --bubble-pink: #FFD6E0;
+            --bubble-green: #C1F0DD;
+            --bubble-blue: #C1E3F0;
+            --dark-text: #333333;
+            --instagram-purple: #C13584; /* Couleur officielle d'Instagram */
+        }
+        
+        /* Styles de base */
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--primary-white);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Styles pour les boutons */
+        .bubble-btn {
+            background-color: var(--bubble-pink);
+            transition: all 0.3s ease;
+        }
+        
+        .bubble-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Styles pour les sections */
+        .dairy-section {
+            background-color: var(--primary-cream);
+        }
+        
+        .bubble-section {
+            background-color: var(--bubble-blue);
+        }
+        
+        /* Styles pour les cartes de produits */
+        .tea-card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .tea-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Style pour le conteneur de carte */
+        .map-container {
+            height: 400px;
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        /* Effet de parallaxe pour les arrière-plans */
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        /* Personnalisation de la barre de défilement */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--primary-white);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--bubble-pink);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bubble-green);
+        }
+        
+        /* Animation des liens de navigation */
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--bubble-pink);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Ajustements responsifs */
+        @media (max-width: 768px) {
+            .tea-card {
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* Animation de rebond pour le bouton WhatsApp */
+        .animate-bounce {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-15px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Effet des icônes sociales */
+        .social-icon {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+       }
+
+        .social-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;            
+            transition: all 0.3s ease;
+            z-index: 0;
+        }
+
+        .social-icon:hover::before {
+            left: 0;
+        }
+
+        .social-icon i {
+            position: relative;
+            z-index: 1;
+        }
+
+       /* Animation des liens de contact */
+        .fa-map-marker-alt, .fa-phone-alt, .fa-envelope {
+            transition: transform 0.3s ease;
+        }
+
+        a:hover .fa-map-marker-alt {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        a:hover .fa-phone-alt {
+            transform: scale(1.2) rotate(-10deg);
+        }
+
+        a:hover .fa-envelope {
+            transform: scale(1.2) translateY(-2px);
+        }
+
+        .facebook-icon-container:hover::before {
+            background-color: #1877F2;
+            transform: scale(1);
+        }
+
+        .facebook-icon-container::before {
+            background-color: #1877F2;
+            transform: scale(0);
+        }
+
+        .instagram-icon-container:hover::before {
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            transform: scale(1);
+        }
+
+        .instagram-icon-container::before {
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            transform: scale(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo et nom de l'entreprise -->
+                <div class="flex items-center">
+                    <img src="Images/Thé.png" alt="Logo Monsieur Thé" class="h-16">
+                    <div class="ml-3">
+                        <span class="text-2xl font-bold text-gray-800 block">Monsieur Thé</span>
+                        <span class="text-sm text-gray-600 italic">La nouvelle boisson, la nouvelle passion !</span>
+                    </div>
+                </div>
+                
+                <!-- Navigation pour ordinateur -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#accueil" class="nav-link py-2 text-gray-700 hover:text-gray-900">Accueil</a>
+                    <a href="#produits" class="nav-link py-2 text-gray-700 hover:text-gray-900">Nos Produits</a>
+                    <a href="#emplacements" class="nav-link py-2 text-gray-700 hover:text-gray-900">Emplacements</a>
+                    <a href="#carrieres" class="nav-link py-2 text-gray-700 hover:text-gray-900">Carrières</a>
+                    <a href="#a-propos" class="nav-link py-2 text-gray-700 hover:text-gray-900">À Propos</a>
+                    <a href="#contact" class="nav-link py-2 text-gray-700 hover:text-gray-900">Contact</a>
+                </div>
+                
+                <!-- Bouton du menu mobile -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 focus:outline-none" aria-label="Menu">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Menu mobile - caché par défaut -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <div class="flex flex-col space-y-3 pb-3">
+                    <a href="#accueil" class="py-2 text-gray-700 hover:text-gray-900">Accueil</a>
+                    <a href="#produits" class="py-2 text-gray-700 hover:text-gray-900">Nos Produits</a>
+                    <a href="#emplacements" class="py-2 text-gray-700 hover:text-gray-900">Emplacements</a>
+                    <a href="#carrieres" class="py-2 text-gray-700 hover:text-gray-900">Carrières</a>
+                    <a href="#a-propos" class="py-2 text-gray-700 hover:text-gray-900">À Propos</a>
+                    <a href="#contact" class="py-2 text-gray-700 hover:text-gray-900">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section Accueil (À ajouter) -->
+    <section id="accueil" class="py-16 bg-bubble-blue">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-5xl font-bold mb-6">Bienvenue chez Monsieur Thé</h1>
+                    <p class="text-xl mb-8">Découvrez nos délicieux produits laitiers traditionnels et nos bubble teas innovants, préparés avec passion.</p>
+                    <div class="flex space-x-4">
+                        <a href="#produits" class="bubble-btn px-6 py-3 rounded-full font-semibold">Nos Produits</a>
+                        <a href="#contact" class="bg-white px-6 py-3 rounded-full font-semibold">Contactez-nous</a>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="Images/photo-shoot_1740907460268 (1).jpg" alt="Produits Monsieur Thé" class="rounded-3xl shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Produits (À ajouter) -->
+    <section id="produits" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12">Nos Produits</h2>
+            
+            <!-- Produits laitiers -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-semibold text-center mb-8">Produits Laitiers Traditionnels</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Carte Produit 1 -->
+                    <div class="tea-card bg-white shadow-lg">
+                        <img src="Images/yogurt.jpg" alt="Yaourt Artisanal" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h4 class="text-xl font-semibold mb-2">Yaourt Artisanal</h4>
+                            <p class="text-gray-600 mb-4">Notre yaourt artisanal préparé selon une recette traditionnelle. Doux, crémeux et riche en saveurs.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold">3,50 €</span>
+                                <button class="bubble-btn px-4 py-2 rounded-full text-sm">Découvrir</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte Produit 2 -->
+                    <div class="tea-card bg-white shadow-lg">
+                        <img src="Images/cheese.jpg" alt="Fromage Blanc" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h4 class="text-xl font-semibold mb-2">Fromage Blanc</h4>
+                            <p class="text-gray-600 mb-4">Un fromage blanc onctueux et léger, parfait pour le petit-déjeuner ou en dessert avec des fruits frais.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold">4,20 €</span>
+                                <button class="bubble-btn px-4 py-2 rounded-full text-sm">Découvrir</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte Produit 3 -->
+                    <div class="tea-card bg-white shadow-lg">
+                        <img src="Images/cream.jpg" alt="Crème Fraîche" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h4 class="text-xl font-semibold mb-2">Crème Fraîche</h4>
+                            <p class="text-gray-600 mb-4">Notre crème fraîche épaisse et veloutée, idéale pour la cuisine ou pour accompagner vos desserts.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold">3,80 €</span>
+                                <button class="bubble-btn px-4 py-2 rounded-full text-sm">Découvrir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bubble Tea -->
+            <div>
+                <h3 class="text-3xl font-semibold text-center mb-8">Bubble Tea</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Carte Bubble Tea 1 -->
+                    <div class="tea-card bg-white shadow-lg">
+                        <img src="Images/matcha.jpg" alt="Matcha Latte Bubble Tea" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h4 class="text-xl font-semibold mb-2">Matcha Latte Bubble Tea</h4>
+                            <p class="text-gray-600 mb-4">Un délicieux mélange de thé matcha et de lait, avec des perles de tapioca au fond.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold">5,90 €</span>
+                                <button class="bubble-btn px-4 py-2 rounded-full text-sm">Commander</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte Bubble Tea 2 -->
+                    <div class="tea-card bg-white shadow-lg">
+                        <img src="Images/taro.jpg" alt="Taro Milk Tea" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h4 class="text-xl font-semibold mb-2">Taro Milk Tea</h4>
+                            <p class="text-gray-600 mb-4">Une boisson sucrée à base de taro, avec un goût unique et une belle couleur violette.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold">5,50 €</span>
+                                <button class="bubble-btn px-4 py-2 rounded-full text-sm">Commander</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte Bubble Tea 3 -->
+                    <div class="tea-card bg-white shadow-lg">
+                        <img src="Images/fruit-tea.jpg" alt="Fruit Tea" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h4 class="text-xl font-semibold mb-2">Fruit Tea</h4>
+                            <p class="text-gray-600 mb-4">Un thé infusé aux fruits frais de saison, agrémenté de perles de fruit éclatantes en bouche.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold">5,20 €</span>
+                                <button class="bubble-btn px-4 py-2 rounded-full text-sm">Commander</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section À propos -->
+    <section id="a-propos" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-12">Notre Histoire</h2>
+                
+                <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+                    <div class="md:flex">
+                        <div class="md:w-1/2">
+                            <img src="Images/Thé.png" alt="Histoire de Monsieur Thé" class="w-full h-full object-cover">
+                        </div>
+                        <div class="md:w-1/2 p-8">
+                            <h3 class="text-2xl font-semibold mb-4">De la tradition à l'innovation</h3>
+                            <p class="text-gray-600 mb-4">
+                                Fondée en 2010 par Jean Dupont, Monsieur Thé est née d'une passion pour les produits laitiers de qualité et d'un désir d'innovation.
+                            </p>
+                            <p class="text-gray-600 mb-4">
+                                Notre aventure a commencé dans un petit atelier du centre de Paris, où nous fabriquions des yaourts artisanaux selon des recettes familiales transmises de génération en génération.
+                            </p>
+                            <p class="text-gray-600 mb-4">
+                                En 2015, inspirés par nos voyages en Asie, nous avons introduit le Bubble Tea dans notre offre, créant un pont unique entre tradition française et innovation asiatique.
+                            </p>
+                            <p class="text-gray-600">
+                                Aujourd'hui, Monsieur Thé est devenu un lieu incontournable pour les amateurs de saveurs authentiques et de créations originales, tout en restant fidèle à ses valeurs : qualité, créativité et respect des traditions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Valeurs -->
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                        <div class="bg-bubble-pink w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-leaf text-2xl text-gray-700"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Qualité</h3>
+                        <p class="text-gray-600">Nous sélectionnons les meilleurs ingrédients et travaillons avec des producteurs locaux pour garantir des produits d'exception.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                        <div class="bg-bubble-green w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-lightbulb text-2xl text-gray-700"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Innovation</h3>
+                        <p class="text-gray-600">Nous explorons constamment de nouvelles saveurs et techniques pour vous offrir des expériences gustatives uniques.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                        <div class="bg-bubble-blue w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-heart text-2xl text-gray-700"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Passion</h3>
+                        <p class="text-gray-600">Chaque produit est préparé avec soin et passion par notre équipe de professionnels dévoués.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Témoignages -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12">Ce que disent nos clients</h2>
+            
+            <div class="max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Témoignage 1 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-bubble-pink rounded-full mr-4"></div>
+                            <div>
+                                <h4 class="font-semibold">Sophie L.</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">
+                            "Le meilleur Bubble Tea que j'ai goûté à Paris ! Les perles sont parfaitement cuites et les saveurs sont incroyables. J'adore aussi leurs yaourts maison."
+                        </p>
+                    </div>
+                    
+                    <!-- Témoignage 2 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-bubble-green rounded-full mr-4"></div>
+                            <div>
+                                <h4 class="font-semibold">Thomas R.</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">
+                            "Une véritable découverte ! Leur fromage blanc est absolument divin et le personnel est toujours souriant et de bon conseil. Un endroit chaleureux à visiter absolument."
+                        </p>
+                    </div>
+                    
+                    <!-- Témoignage 3 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-bubble-blue rounded-full mr-4"></div>
+                            <div>
+                                <h4 class="font-semibold">Émilie D.</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">
+                            "J'adore le concept qui mélange tradition française et saveurs asiatiques. Leur Matcha Latte Bubble Tea est ma commande régulière. On sent la qualité des produits !"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Emplacements -->
+    <section id="emplacements" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12">Nos Emplacements</h2>
+            
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
+                    <div class="md:flex">
+                        <div class="md:w-1/2 p-6">
+                            <h3 class="text-2xl font-semibold mb-4">Lomé, Togo</h3>
+                            <p class="text-gray-600 mb-4">
+                                <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                RUE DE COMMERCE LOME TOGO, Lomé, Togo
+                            </p>
+                            <p class="text-gray-600 mb-4">
+                                <i class="fas fa-phone-alt mr-2 text-green-500"></i>
+                                +228 98 17 21 21
+                            </p>
+                            <p class="text-gray-600 mb-4">
+                                <i class="far fa-clock mr-2 text-blue-500"></i>
+                                Lundi - Samedi: 10h00 - 20h00<br>
+                                Dimanche: 14h00 - 20h00
+                            </p>
+                            <div class="flex items-center mb-4">
+                                <div id="status-indicator" class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                                <span id="status-text" class="text-sm">Actuellement ouvert</span>
+                            </div>
+                        </div>
+                        <div class="md:w-1/2">
+                            <div id="map1" class="map-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Contact -->
+    <section id="contact" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12">Contactez-nous</h2>
+            
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+                    <div class="md:flex">
+                        <div class="md:w-1/2 p-8">
+                            <h3 class="text-2xl font-semibold mb-6">Envoyez-nous un message</h3>
+                            <!-- Formulaire avec EmailJS pour l'envoi d'emails -->
+                            <form id="contact-form">
+                                <div class="mb-4">
+                                    <label for="contact-name" class="block text-gray-700 mb-2">Nom</label>
+                                    <input type="text" id="contact-name" name="user_name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="contact-email" class="block text-gray-700 mb-2">Email</label>
+                                    <input type="email" id="contact-email" name="user_email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="contact-subject" class="block text-gray-700 mb-2">Sujet</label>
+                                    <select id="contact-subject" name="subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200" required>
+                                        <option value="">Sélectionnez un sujet</option>
+                                        <option value="info">Demande d'information</option>
+                                        <option value="feedback">Commentaires et suggestions</option>
+                                        <option value="partnership">Proposition de partenariat</option>
+                                        <option value="other">Autre</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <label for="contact-message" class="block text-gray-700 mb-2">Message</label>
+                                    <textarea id="contact-message" name="message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200" required></textarea>
+                                </div>
+                                
+                                <button type="submit" class="bubble-btn px-6 py-3 rounded-full font-semibold">Envoyer</button>
+                                <div id="email-status" class="mt-4 hidden"></div>
+                            </form>
+                        </div>
+                        
+                        <div class="md:w-1/2 bg-gray-50 p-8">
+                            <h3 class="text-2xl font-semibold mb-6">Informations de contact</h3>
+                            
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                                <span>RUE DE COMMERCE LOME TOGO, Lomé, Togo</span>
+                            </div>
+
+                                                        
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-phone text-green-500 mr-2"></i>
+                                <span>+228 98 17 21 21</span>
+                            </div>
+                            
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-envelope text-blue-500 mr-2"></i>
+                                <span>contact@monsieurthe.com</span>
+                            </div>
+                            
+                            <div class="flex items-center mb-8">
+                                <i class="far fa-clock text-purple-500 mr-2"></i>
+                                <div>
+                                    <p>Lundi - Samedi: 10h00 - 20h00</p>
+                                    <p>Dimanche: 14h00 - 20h00</p>
+                                </div>
+                            </div>
+                            
+                            <h4 class="font-semibold mb-4">Suivez-nous</h4>
+                            <div class="flex space-x-4">
+                                <a href="https://www.instagram.com/monsieurtheenafrique/" target="_blank" class="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-pink-100 transition-colors duration-200">
+                                    <i class="fab fa-instagram text-instagram-purple"></i>
+                                </a>
+                                <a href="https://www.facebook.com/people/Monsieur-Th%C3%A9/100075443697842" target="_blank" class="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-blue-100 transition-colors duration-200">
+                                    <i class="fab fa-facebook-f text-blue-600"></i>
+                                </a>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Carrières -->
+    <section id="carrieres" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12">Rejoignez notre équipe</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-3xl shadow-lg mb-8">
+                    <h3 class="text-2xl font-semibold mb-4">Pourquoi nous rejoindre ?</h3>
+                    <p class="text-gray-600 mb-6">
+                        Chez Monsieur Thé, nous croyons que notre équipe est notre plus grand atout. Nous recherchons des personnes passionnées, créatives et désireuses d'offrir une expérience exceptionnelle à nos clients.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">Environnement stimulant</h4>
+                            <p class="text-gray-600">Travaillez dans une atmosphère dynamique où l'innovation est encouragée.</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">Formation continue</h4>
+                            <p class="text-gray-600">Nous investissons dans le développement professionnel de nos employés.</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">Avantages sociaux</h4>
+                            <p class="text-gray-600">Des avantages compétitifs pour assurer votre bien-être.</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">Évolution de carrière</h4>
+                            <p class="text-gray-600">Des opportunités d'évolution au sein de notre entreprise en pleine croissance.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-3xl shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-6">Postes à pourvoir</h3>
+                    
+                    <!-- Poste 1 -->
+                    <div class="border-b border-gray-200 pb-6 mb-6">
+                        <h4 class="text-xl font-semibold mb-2">Barista / Tea Master</h4>
+                        <div class="flex items-center text-sm text-gray-500 mb-4">
+                            <span class="mr-4"><i class="fas fa-map-marker-alt mr-1"></i> Lomé, Togo</span>
+                            <span><i class="fas fa-clock mr-1"></i> Temps plein</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            Nous recherchons un(e) Barista passionné(e) pour préparer nos délicieux bubble teas et conseiller nos clients. Une expérience préalable est un plus, mais nous offrons une formation complète.
+                        </p>
+                        <button class="text-pink-600 font-semibold hover:text-pink-700 transition-colors duration-200">
+                            Voir les détails <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Poste 2 -->
+                    <div class="border-b border-gray-200 pb-6 mb-6">
+                        <h4 class="text-xl font-semibold mb-2">Artisan Fromager</h4>
+                        <div class="flex items-center text-sm text-gray-500 mb-4">
+                            <span class="mr-4"><i class="fas fa-map-marker-alt mr-1"></i> Lomé, Togo</span>
+                            <span><i class="fas fa-clock mr-1"></i> Temps plein</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            Rejoignez notre équipe en tant qu'artisan fromager pour produire nos produits laitiers traditionnels. Vous participerez à toutes les étapes de fabrication, du contrôle qualité à la finition.
+                        </p>
+                        <button class="text-pink-600 font-semibold hover:text-pink-700 transition-colors duration-200">
+                            Voir les détails <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Postuler spontanément -->
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4">Candidature spontanée</h4>
+                        <p class="text-gray-600 mb-4">
+                            Vous ne trouvez pas le poste qui vous correspond mais vous souhaitez rejoindre notre équipe ? N'hésitez pas à nous envoyer votre candidature spontanée.
+                        </p>
+                        <a href="mailto:recrutement@monsieurthe.com" class="bubble-btn inline-block px-6 py-3 rounded-full font-semibold">
+                            Postuler maintenant
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Bouton WhatsApp flottant -->
+    <a href="https://wa.me/22898172121" target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg animate-bounce z-50">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo et description -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center mb-4">
+                        <img src="Images/Thé.png" alt="Logo Monsieur Thé" class="h-16 bg-white rounded-full p-2">
+                        <span class="ml-3 text-2xl">Monsieur Thé</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Spécialiste des produits laitiers traditionnels et du bubble tea moderne.
+                    </p>
+                </div>
+                
+                <!-- Liens rapides -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Liens rapides</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#accueil" class="text-gray-400 hover:text-white transition-colors duration-200">Accueil</a></li>
+                        <li><a href="#produits" class="text-gray-400 hover:text-white transition-colors duration-200">Nos Produits</a></li>
+                        <li><a href="#emplacements" class="text-gray-400 hover:text-white transition-colors duration-200">Emplacements</a></li>
+                        <li><a href="#carrieres" class="text-gray-400 hover:text-white transition-colors duration-200">Carrières</a></li>
+                        <li><a href="#a-propos" class="text-gray-400 hover:text-white transition-colors duration-200">À Propos</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-bubble-pink mr-2"></i>
+                            <span class="text-gray-400">RUE DE COMMERCE LOME TOGO, Lomé, Togo</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-bubble-green mr-2"></i>
+                            <span class="text-gray-400">+228 98 17 21 21</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-bubble-blue mr-2"></i>
+                            <span class="text-gray-400">contact@monsieurthe.com</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Horaires -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Horaires d'ouverture</h4>
+                    <ul class="space-y-2">
+                        <li class="flex justify-between">
+                            <span class="text-gray-400">Lundi - Vendredi:</span>
+                            <span class="text-gray-400">10h00 - 20h00</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="text-gray-400">Samedi:</span>
+                            <span class="text-gray-400">10h00 - 20h00</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="text-gray-400">Dimanche:</span>
+                            <span class="text-gray-400">14h00 - 20h00</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-gray-700 my-8">
+            
+            <!-- Bas de page -->
+            <div class="flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">                 
+                
+                
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/people/Monsieur-Th%C3%A9/100075443697842/" class="social-icon facebook-icon-container rounded-full w-10 h-10 flex items-center justify-center border border-white transition-colors duration-300 hover:bg-white">
+                        <i class="fab fa-facebook-f text-white hover:text-gray-800"></i>
+                    </a>
+                    <a href="https://www.instagram.com/monsieurtheenafrique/" class="social-icon  instagram-icon-container rounded-full w-10 h-10 flex items-center justify-center border border-white transition-colors duration-300 hover:bg-white">
+                        <i class="fab fa-instagram text-white hover:text-gray-800"></i>
+                    </a>        
+                    <a href="https://wa.me/22898172121" class="social-icon rounded-full w-10 h-10 flex items-center justify-center border border-white transition-colors duration-300 hover:bg-white">
+                        <i class="fab fa-whatsapp text-white hover:text-gray-800"></i>
+                    </a>       
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="bg-white py-4">
+        <div class="container mx-auto px-4 flex items-center  space-x-2">
+            <img src="Images/Thé.png" alt="Logo" class="h-11 w-11">
+            <span class="text-gray-600 text-sm">© 2025 Monsieur Thé. Tous droits réservés.</span>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <!-- Leaflet JS pour la carte -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
+    
+    <script>
+        // Menu mobile
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Initialisation des cartes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carte Lomé
+            const map1 = L.map('map1').setView([6.1319, 1.2228], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map1);
+            
+            L.marker([6.1319, 1.2228]).addTo(map1)
+                .bindPopup('Monsieur Thé - Lomé')
+                .openPopup();
+            
+            // Vérifier si le magasin est ouvert
+            function checkIfOpen() {
+                const now = new Date();
+                const day = now.getDay(); // 0 = Dimanche, 1 = Lundi, etc.
+                const hours = now.getHours();
+                
+                const statusIndicator = document.getElementById('status-indicator');
+                const statusText = document.getElementById('status-text');
+                
+                let isOpen = false;
+                
+                if (day === 0) { // Dimanche
+                    isOpen = (hours >= 14 && hours < 20);
+                } else { // Lundi à Samedi
+                    isOpen = (hours >= 10 && hours < 20);
+                }
+                
+                if (isOpen) {
+                    statusIndicator.classList.remove('bg-red-500');
+                    statusIndicator.classList.add('bg-green-500');
+                    statusText.textContent = 'Actuellement ouvert';
+                } else {
+                    statusIndicator.classList.remove('bg-green-500');
+                    statusIndicator.classList.add('bg-red-500');
+                    statusText.textContent = 'Actuellement fermé';
+                }
+            }
+            
+            checkIfOpen();
+            setInterval(checkIfOpen, 60000); // Vérifier toutes les minutes
+        });
+        
+         /* Remplacer cet ID par votre ID de service EmailJS; EmailJS, 
+            une bibliothèque qui permet d'envoyer des emails directement 
+            depuis le front-end (côté client) sans avoir besoin d'un serveur backend*/
+
+        (function() {            
+            emailjs.init('YOUR_EMAILJS_USER_ID');
+            
+            document.getElementById('contact-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const statusDiv = document.getElementById('email-status');
+                statusDiv.classList.remove('hidden', 'text-green-600', 'text-red-600');
+                statusDiv.textContent = 'Envoi en cours...';
+                
+                // Remplacer ces IDs par vos IDs de service et template EmailJS
+                emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+                    .then(function() {
+                        statusDiv.classList.add('text-green-600');
+                        statusDiv.textContent = 'Message envoyé avec succès!';
+                        document.getElementById('contact-form').reset();
+                    }, function(error) {
+                        statusDiv.classList.add('text-red-600');
+                        statusDiv.textContent = 'Erreur lors de l\'envoi: ' + error.text;
+                    });
+            });
+        })(); //Le code est encapsulé dans une IIFE (Immediately Invoked Function Expression). Cela crée une portée isolée et exécute le code immédiatement au chargement.
+
+
+        
+        // Animation fluide pour les liens d'ancrage
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, // Ajuster pour la barre de navigation
+                        behavior: 'smooth'
+                    });
+                    
+                    // Fermer le menu mobile si ouvert
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
